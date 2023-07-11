@@ -1,5 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
+
 import Card from '../../components/card';
 import FormGroup from '../../components/form-group';
 import SelectMenu from '../../components/selectMenu';
@@ -30,7 +31,8 @@ class ConsultaLancamentos extends React.Component {
 
     listar = () => {
         if (!this.state.ano) {
-            messages.mensagemErro('O preenchimento do campo Ano é obrigatório.')
+           messages.mensagemErro('O preenchimento do campo Ano é obrigatório.')
+           return false;
         }
         const usuarioLogado = LocalStorageService.obterItem('_usuario_logado');
 
@@ -44,7 +46,12 @@ class ConsultaLancamentos extends React.Component {
 
         this.service.findAll(lancamentoFiltro)
             .then(response => {
-                this.setState({ lancamentos: response.data })
+                const lista = response.data;
+
+                if(lista.length < 1){
+                    messages.mensagemAlerta("Nenhum resultado encontrado!");
+                }
+                this.setState({ lancamentos: lista })
             }).catch(error => {
                 messages.mensagemErro(error.response.data)
             })
@@ -78,6 +85,23 @@ class ConsultaLancamentos extends React.Component {
                 messages.mensagemErro('Ocorreu um erro ao tentar deletar o Lançamento')
             })
     }
+
+    alterarStatus = (lancamento, status) => {
+        this.service.atualizarStatus(lancamento.id, status)
+            .then(response => {
+                const lancamentos = this.state.lancamentos;
+                const index = lancamentos.indexOf(lancamento);
+                if (index !== -1) {
+                    lancamento['status'] = status;
+                    lancamento[index] = lancamento
+                    this.setState({ lancamento });
+                }
+                messages.mensagemSucesso('Status atualizado com sucesso')
+                this.service.listar();
+            }).catch(error => {
+                messages.mensagemErro(error.response.data)
+    })
+}
 
     render() {
 
@@ -135,8 +159,16 @@ class ConsultaLancamentos extends React.Component {
                 </div>
                 <div className="row">
                     <div>
-                        <button onClick={this.listar} type="button" className="btn btn-success">Buscar</button>
-                        <button onClick={this.cadastrarLancamento} type="button" className='btn btn-danger'>Cadastrar</button>
+                        <button onClick={this.listar}
+                            type="button"
+                            className="btn btn-success">
+                            <i className="pi pi-search" style={{ color:'#FFFFFF' }}></i> Buscar
+                        </button>
+                        <button onClick={this.cadastrarLancamento}
+                            type="button"
+                            className='btn btn-danger'>
+                            <i className="pi pi-plus" style={{ color: '#FFFFFF' }}></i> Cadastrar
+                        </button>
                     </div>
                 </div>
 
@@ -145,7 +177,8 @@ class ConsultaLancamentos extends React.Component {
                         <div className="bs-component">
                             <LancamentosTable lancamentos={this.state.lancamentos}
                                 deletar={this.abrirConfirmacao}
-                                editar={this.editar} />
+                                editar={this.editar}
+                                alterarStatus={this.alterarStatus} />
                         </div>
                     </div>
                 </div>

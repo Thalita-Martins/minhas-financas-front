@@ -1,13 +1,12 @@
-import React from 'react';
-import { withRouter } from 'react-router-dom';
-import UsuarioService from '../app/service/usuarioService';
-import LocalStorageService from '../app/service/localStorageService'
+import React from 'react'
+
+import UsuarioService from '../app/service/usuarioService'
+import { AuthContext } from '../main/provedorAutenticacao'
 
 class Home extends React.Component {
 
     state = {
         saldo: 0,
-        mensagemErro: null
     }
 
     constructor() {
@@ -16,13 +15,13 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        const usuarioLogado = LocalStorageService.obterItem('_usuario_logado')
+        const usuarioLogado = this.context.usuarioAutenticado
 
         this.usuarioService.obterSaldoUsuario(usuarioLogado.id)
             .then(response => {
                 this.setState({ saldo: response.data })
-            }).catch(erro => {
-                this.setState({ mensagemErro: erro.response.data })
+            }).catch(error => {
+                console.error(error.response)
             })
     }
 
@@ -49,4 +48,6 @@ class Home extends React.Component {
     }
 }
 
-export default withRouter(Home);
+Home.contextType = AuthContext;
+
+export default Home

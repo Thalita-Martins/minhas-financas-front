@@ -1,7 +1,7 @@
 import toastr from 'toastr'
 
 toastr.options = {
-    "closeButton": false,
+    "closeButton": true,
     "debug": false,
     "newestOnTop": false,
     "progressBar": true,
@@ -33,6 +33,3 @@ export function mensagemSucesso(mensagem) {
 export function mensagemAlerta(mensagem){
     mostrarMensagem(`Alerta`, mensagem, `warning`)
 }
-
-
-

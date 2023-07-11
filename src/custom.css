@@ -1,1 +1,7 @@
-body{padding-top:120px;}pre{background: #f7f7f9;}@media (min-width: 768px){body>.navbaar-transpaent{box-shadow: none;}}
+body{padding-top:120px;}pre{background: #3a3aaf;}@media (min-width: 768px){body>.navbaar-transpaent{box-shadow: none;}}
+
+.btn{
+    margin-right: 5px;
+    font-weight: 500;
+    color: #F0F8FF;
+}
